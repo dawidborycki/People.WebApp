@@ -37,10 +37,11 @@ namespace People.WebApp.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<Person>> GetPerson(string id)
         {
-          if (context.People == null)
-          {
-              return NotFound();
-          }
+            if (context.People == null)
+            {
+                return NotFound();
+            }
+
             var person = await context.People.FindAsync(id);
 
             if (person == null)
@@ -98,7 +99,14 @@ namespace People.WebApp.Controllers
             {
                 return Problem("Entity set 'PeopleDbContext.People'  is null.");
             }
+
+            if (string.IsNullOrEmpty(person.Id))
+            {
+                person.Id = Guid.NewGuid().ToString();
+            }
+
             context.People.Add(person);
+
             try
             {
                 await context.SaveChangesAsync();

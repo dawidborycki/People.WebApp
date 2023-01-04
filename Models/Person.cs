@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace People.WebApp.Models
 {
     public class Person
-    {
+    {        
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [DisplayName("First name")]
