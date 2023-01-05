@@ -18,9 +18,9 @@ namespace People.WebApp.Controllers
         // GET: People
         public async Task<IActionResult> Index()
         {
-              return context.People != null ? 
-                          View(await context.People.ToListAsync()) :
-                          Problem("Entity set 'PeopleDbContext.People'  is null.");
+            return context.People != null ? 
+                        View(await context.People.ToListAsync()) :
+                        Problem("Entity set 'PeopleDbContext.People'  is null.");
         }
 
         // GET: People/Details/5

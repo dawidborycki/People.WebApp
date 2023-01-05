@@ -10,12 +10,12 @@ namespace People.WebApp.Models
         [DisplayName("First name")]
         [Required]
         [StringLength(50, MinimumLength = 2)]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = String.Empty;
 
         [DisplayName("Last name")]
         [Required]
         [StringLength(50, MinimumLength = 2)]        
-        public string LastName { get; set; }
+        public string LastName { get; set; } = String.Empty;
 
         [DisplayName("Birth date")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
