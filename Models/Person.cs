@@ -10,18 +10,17 @@ namespace People.WebApp.Models
         [DisplayName("First name")]
         [Required]
         [StringLength(50, MinimumLength = 2)]
-        public string FirstName { get; set; } = String.Empty;
+        public string FirstName { get; set; } = string.Empty;
 
         [DisplayName("Last name")]
         [Required]
         [StringLength(50, MinimumLength = 2)]        
-        public string LastName { get; set; } = String.Empty;
+        public string LastName { get; set; } = string.Empty;
 
         [DisplayName("Birth date")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]
         [DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
-
 
         public int Age
         {
@@ -31,6 +30,18 @@ namespace People.WebApp.Models
 
                 return Convert.ToInt32(dayDiff / 365);
             }
+        }
+
+        public void Update(Person person)
+        {
+            if (person == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            FirstName = person.FirstName;
+            LastName = person.LastName;
+            BirthDate = person.BirthDate;
         }
     }
 }

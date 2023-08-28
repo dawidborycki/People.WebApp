@@ -51,7 +51,7 @@ namespace People.WebApp.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]        
         public async Task<IActionResult> Create([Bind("FirstName,LastName,BirthDate")] Person person)
         {
             if (ModelState.IsValid)
@@ -82,36 +82,38 @@ namespace People.WebApp.Controllers
         // POST: People/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,BirthDate")] Person person)
+        public async Task<IActionResult> EditPerson(string? id)
         {
-            if (id != person.Id)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var personToUpdate = await context.People.FirstOrDefaultAsync(p => p.Id == id);
+            if (personToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            if (await TryUpdateModelAsync(
+                personToUpdate,
+                "",
+                p => p.FirstName, p => p.LastName, p => p.BirthDate))
             {
                 try
                 {
-                    context.Update(person);
                     await context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException)
                 {
-                    if (!PeopleDbContextHelper.PersonExists(context, person.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    Problem("Unable to save changes.");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(person);
+
+            return View(personToUpdate);
         }
 
         // GET: People/Delete/5

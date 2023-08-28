@@ -24,10 +24,10 @@ namespace People.WebApp.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<IEnumerable<Person>>> GetPeople()
         {
-          if (context.People == null)
-          {
-              return NotFound();
-          }
+            if (context.People == null)
+            {
+                return NotFound();
+            }
             return await context.People.ToListAsync();
         }
 
@@ -59,30 +59,29 @@ namespace People.WebApp.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> PutPerson(string id, Person person)
-        {
+        {            
             if (id != person.Id)
             {
                 return BadRequest();
             }
 
-            context.Entry(person).State = EntityState.Modified;
+            var personToUpdate = await context.People.FindAsync(id);
+            if (personToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            personToUpdate.Update(person);
 
             try
             {
                 await context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException) when (!PeopleDbContextHelper.PersonExists(context, person.Id))
             {
-                if (!PeopleDbContextHelper.PersonExists(context, person.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
-
+            
             return NoContent();
         }
 

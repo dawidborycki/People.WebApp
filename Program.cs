@@ -22,12 +22,7 @@ builder.Services.AddDbContext<PeopleDbContext>(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(s => s.SwaggerDoc("v1", new OpenApiInfo
-{
-    Version = "v1",
-    Title = "People API",
-    Description = "An ASP.NET Core Web API for managing people items"
-}));
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
