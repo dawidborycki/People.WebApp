@@ -48,7 +48,7 @@ namespace People.WebApp.Data
                     BirthDate = new DateTime(1992, 4, 4)
                 });
                 
-                SaveChangesAsync();
+                SaveChanges();
             }
         }
     }
