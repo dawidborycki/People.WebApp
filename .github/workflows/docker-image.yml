@@ -1,0 +1,41 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - ci-workflow-docker
+env:
+  IMAGE_NAME: people.webapp
+  ACR_NAME: people
+  ACR_LOGIN_SERVER: people.azurecr.io
+  
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Login to Azure Container Registry
+      run: |
+        echo "${{ secrets.ACR_PASSWORD }}" | docker login -u "${{ secrets.ACR_USERNAME }}" "$ACR_NAME"
+        
+    - name: Count existing tags
+      id: count-tags
+      run: |
+        COUNT=$(az acr repository show-tags -n $ACR_NAME --repository $IMAGE_NAME -o tsv | wc -l)
+        echo "::set-output name=count::$COUNT"      
+    
+    - name: Build Docker image
+      run: |
+        docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:v$((count-tags+1)) .
+        docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:v$((count-tags+1))
+    
+    - name: Logout from Azure Container Registry
+      run: |
+        docker logout "${{ secrets.ACR_LOGIN_SERVER }}"
+    
+    - name: Cleanup Docker images
+      run: |
+        docker image rm $ACR_LOGIN_SERVER/$ACR_NAME:v$((count-tags+1))
