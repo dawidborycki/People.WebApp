@@ -19,7 +19,7 @@ jobs:
       
     - name: Login to Azure Container Registry
       run: |
-        echo "${{ secrets.ACR_PASSWORD }}" | docker login -u "${{ secrets.ACR_USERNAME }}" "$ACR_NAME"
+        echo "${{ secrets.ACR_PASSWORD }}" | docker login -u "${{ secrets.ACR_USERNAME }}" $ACR_NAME
         
     - name: Count existing tags
       id: count-tags
@@ -34,7 +34,7 @@ jobs:
     
     - name: Logout from Azure Container Registry
       run: |
-        docker logout "${{ secrets.ACR_LOGIN_SERVER }}"
+        docker logout $ACR_LOGIN_SERVER
     
     - name: Cleanup Docker images
       run: |
