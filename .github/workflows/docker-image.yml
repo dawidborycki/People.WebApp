@@ -17,9 +17,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }} 
+        
     - name: Login to Azure Container Registry
       run: |
-        echo "${{ secrets.ACR_PASSWORD }}" | docker login -u "${{ secrets.ACR_USERNAME }}" people.azurecr.io
+        az acr login -n $ACR_NAME
         
     - name: Count existing tags
       id: count-tags
