@@ -43,4 +43,4 @@ jobs:
     
     - name: Cleanup Docker images
       run: |
-        docker image rm $ACR_LOGIN_SERVER/$ACR_NAME:v$((count-tags+1))
+        docker image rm $ACR_LOGIN_SERVER/$IMAGE_NAME:v$((count-tags+1))
