@@ -30,7 +30,7 @@ jobs:
       id: count-tags
       run: |
         COUNT=$(az acr repository show-tags -n $ACR_NAME --repository $IMAGE_NAME -o tsv | wc -l)
-        IMAGE_TAG=v$(expr ${{ env.COUNT }} + 1)
+        IMAGE_TAG=v$(expr $COUNT + 1)
         echo "Image tag: $IMAGE_TAG"
         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
     
