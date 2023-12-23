@@ -30,12 +30,12 @@ jobs:
       id: count-tags
       run: |
         COUNT=$(az acr repository show-tags -n $ACR_NAME --repository $IMAGE_NAME -o tsv | wc -l)
-        echo "::set-output name=count::$COUNT"      
+        echo "COUNT=$COUNT" >> $GITHUB_ENV     
     
     - name: Build Docker image
       run: |
-        docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:v$((count-tags+1)) .
-        docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:v$((count-tags+1))
+        docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:v$((${{ env.COUNT }}+1)) .
+        docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:v$((${{ env.COUNT }}+1))
     
     - name: Logout from Azure Container Registry
       run: |
