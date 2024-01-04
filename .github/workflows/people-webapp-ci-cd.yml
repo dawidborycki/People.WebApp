@@ -36,7 +36,7 @@ jobs:
     
     - name: Build Docker image
       run: |
-        FQ_IMAGE_NAME="$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+        FQ_IMAGE_NAME=$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
         echo "FQ_IMAGE_NAME=$FQ_IMAGE_NAME"
         docker build -t $FQ_IMAGE_NAME .
         docker push $FQ_IMAGE_NAME
