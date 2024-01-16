@@ -9,7 +9,7 @@ namespace People.WebApp.Controllers
         [HttpGet]
         public string GetMachineName()
         {
-            return $"The request was processed by: {Environment.MachineName}";
+            return $"The request was processed by: {Environment.MachineName}"; 
         }
     }
 }
