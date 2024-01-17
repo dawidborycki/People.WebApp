@@ -65,7 +65,7 @@ jobs:
 
       - name: Configure Kubernetes Manifest
         run: |
-          sed -i 's|<FQ_IMAGE_NAME>|"${FQ_IMAGE_NAME}"|g' ./aks/deployment.yml
+          sed -i "s|<FQ_IMAGE_NAME>|${FQ_IMAGE_NAME}|g" ./aks/deployment.yml
           cat ./aks/deployment.yml
 
       - name: Update Deployment
