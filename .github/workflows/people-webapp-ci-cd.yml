@@ -14,9 +14,7 @@ env:
 
 jobs:
   build-and-push-docker-image:
-    runs-on: ubuntu-latest
-    outputs:
-      fq_image_name: ${{ steps.set_output.outputs.fq_image_name }}
+    runs-on: ubuntu-latest    
 
     steps:
       - name: Checkout code
@@ -37,10 +35,11 @@ jobs:
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Build and push Docker image
+        id: build-image
         run: |
           FQ_IMAGE_NAME=$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
           echo "FQ_IMAGE_NAME=$FQ_IMAGE_NAME" >> $GITHUB_ENV
-          echo "::set-output name=fq_image_name::$(echo $FQ_IMAGE_NAME)"          
+          echo "FQ_IMAGE_NAME=$FQ_IMAGE_NAME" >> $GITHUB_OUTPUT
           docker build -t $FQ_IMAGE_NAME .
           docker push $FQ_IMAGE_NAME
 
@@ -67,9 +66,11 @@ jobs:
         run: az aks get-credentials -g $RG_NAME -n $CLUSTER_NAME
 
       - name: Configure Kubernetes Manifest
+        env:
+          FQ_IMAGE_NAME: ${{ needs.build-and-push-docker-image.outputs.FQ_IMAGE_NAME }}
         run: |
-          echo ${{needs.build-and-push-docker-image.outputs.fq_image_name}}
-          sed -i "s|<FQ_IMAGE_NAME>|${{needs.build-and-push-docker-image.outputs.fq_image_name}}|g" ./aks/deployment.yml
+          echo $FQ_IMAGE_NAME
+          sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./aks/deployment.yml
           cat ./aks/deployment.yml
 
       - name: Update Deployment
