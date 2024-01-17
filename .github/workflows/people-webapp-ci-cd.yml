@@ -38,6 +38,7 @@ jobs:
         run: |
           FQ_IMAGE_NAME=$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
           echo "FQ_IMAGE_NAME=$FQ_IMAGE_NAME" >> $GITHUB_ENV
+          echo "FQ_IMAGE_NAME=$FQ_IMAGE_NAME" >> $GITHUB_OUTPUT
           docker build -t $FQ_IMAGE_NAME .
           docker push $FQ_IMAGE_NAME
 
@@ -65,7 +66,7 @@ jobs:
 
       - name: Configure Kubernetes Manifest
         run: |
-          sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./aks/deployment.yml
+          sed -i "s|<FQ_IMAGE_NAME>|$needs.build-and-push-docker-image.outputs.FQ_IMAGE_NAME|g" ./aks/deployment.yml
           cat ./aks/deployment.yml
 
       - name: Update Deployment
