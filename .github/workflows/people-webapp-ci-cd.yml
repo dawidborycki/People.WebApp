@@ -63,7 +63,7 @@ jobs:
         run: az aks get-credentials -g $RG_NAME -n $CLUSTER_NAME
 
       - name: Configure Kubernetes Manifest
-        run: sed -i 's|<FQ_IMAGE_NAME>|"${FQ_IMAGE_NAME}"|g' aks/deployment.yml
+        run: sed -i 's|<FQ_IMAGE_NAME>|"${FQ_IMAGE_NAME}"|g' ./aks/deployment.yml
 
       - name: Update Deployment
-        run: kubectl apply -f deployment.yaml
+        run: kubectl apply -f ./aks/deployment.yaml
