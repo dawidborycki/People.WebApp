@@ -9,6 +9,8 @@ env:
   IMAGE_NAME: people.webapp
   ACR_NAME: people
   ACR_LOGIN_SERVER: people.azurecr.io
+  RG_NAME: rg-aks-people
+  CLUSTER_NAME: aks-people
 
 jobs:
   build-and-push-docker-image:
@@ -44,3 +46,24 @@ jobs:
         
       - name: Cleanup Docker images
         run: docker image rm $FQ_IMAGE_NAME
+  
+  deploy-to-aks:  
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }} 
+
+      - name: Configure Kubernetes context
+        run: az aks get-credentials -g $RG_NAME -n $CLUSTER_NAME
+
+      - name: Configure Kubernetes Manifest
+        run: sed -i '' 's|<FQ_IMAGE_NAME>|"${FQ_IMAGE_NAME}"|g' deployment.yml
+
+      - name: Update Deployment
+        run: kubectl apply -f deployment.yaml
