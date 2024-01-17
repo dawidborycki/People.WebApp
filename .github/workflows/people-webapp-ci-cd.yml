@@ -49,6 +49,9 @@ jobs:
       - name: Cleanup Docker images
         run: docker image rm $FQ_IMAGE_NAME
   
+    outputs:
+      fq_image_name: ${{steps.build-image.outputs.FQ_IMAGE_NAME}}
+
   deploy-to-aks:  
     runs-on: ubuntu-latest
     needs: build-and-push-docker-image
@@ -67,7 +70,7 @@ jobs:
 
       - name: Configure Kubernetes Manifest
         env:
-          FQ_IMAGE_NAME: ${{ needs.build-and-push-docker-image.outputs.FQ_IMAGE_NAME }}
+          FQ_IMAGE_NAME: ${{ needs.build-and-push-docker-image.outputs.fq_image_name }}
         run: |
           echo $FQ_IMAGE_NAME
           sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./aks/deployment.yml
