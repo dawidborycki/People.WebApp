@@ -66,4 +66,4 @@ jobs:
         run: sed -i 's|<FQ_IMAGE_NAME>|"${FQ_IMAGE_NAME}"|g' ./aks/deployment.yml
 
       - name: Update Deployment
-        run: kubectl apply -f ./aks/deployment.yaml
+        run: kubectl apply -f ./aks/deployment.yml
