@@ -73,7 +73,7 @@ jobs:
         env:
           FQ_IMAGE_NAME: ${{ needs.build-and-push-docker-image.outputs.fq_image_name }}
         run: |          
-          MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, $AKS_POOL_NODE_NAME)].clientId" -o tsv)
+          MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, '$AKS_POOL_NODE_NAME')].clientId" -o tsv)
           sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./aks/deployment.yml
           sed -i "s|<MANAGED_CLIENT_ID>|$MANAGED_CLIENT_ID|g" ./aks/deployment.yml
           cat ./aks/deployment.yml
