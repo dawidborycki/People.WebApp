@@ -11,6 +11,7 @@ env:
   ACR_LOGIN_SERVER: people.azurecr.io
   RG_NAME: rg-aks-people
   CLUSTER_NAME: aks-people
+  AKS_POOL_NODE_NAME: aks-people-agentpool
 
 jobs:
   build-and-push-docker-image:
@@ -71,9 +72,10 @@ jobs:
       - name: Configure Kubernetes Manifest
         env:
           FQ_IMAGE_NAME: ${{ needs.build-and-push-docker-image.outputs.fq_image_name }}
-        run: |
-          echo $FQ_IMAGE_NAME
+        run: |          
+          MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, $AKS_POOL_NODE_NAME)].clientId" -o tsv)
           sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./aks/deployment.yml
+          sed -i "s|<MANAGED_CLIENT_ID>|$MANAGED_CLIENT_ID|g" ./aks/deployment.yml
           cat ./aks/deployment.yml
 
       - name: Update Deployment
