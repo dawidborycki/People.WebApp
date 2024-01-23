@@ -16,8 +16,10 @@ env:
 jobs:
   build-and-push-docker-image:
     runs-on: ubuntu-latest    
-
-    steps:
+    outputs:
+      fq_image_name: ${{steps.build-image.outputs.FQ_IMAGE_NAME}}
+      
+    steps:    
       - name: Checkout code
         uses: actions/checkout@v3
         
@@ -48,10 +50,7 @@ jobs:
         run: docker logout $ACR_LOGIN_SERVER
         
       - name: Cleanup Docker images
-        run: docker image rm $FQ_IMAGE_NAME
-  
-    outputs:
-      fq_image_name: ${{steps.build-image.outputs.FQ_IMAGE_NAME}}
+        run: docker image rm $FQ_IMAGE_NAME  
 
   deploy-to-aks:  
     runs-on: ubuntu-latest
@@ -72,7 +71,7 @@ jobs:
       - name: Configure Kubernetes Manifest
         env:
           FQ_IMAGE_NAME: ${{ needs.build-and-push-docker-image.outputs.fq_image_name }}
-        run: |          
+        run: |
           MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, '$AKS_POOL_NODE_NAME')].clientId" -o tsv)
           sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./aks/deployment.yml
           sed -i "s|<MANAGED_CLIENT_ID>|$MANAGED_CLIENT_ID|g" ./aks/deployment.yml
