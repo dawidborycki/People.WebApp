@@ -18,6 +18,13 @@ spec:
           imagePullPolicy: Always
           ports:
           - containerPort: 5000
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
           env:
           - name: UseInMemoryDatabase
             value: "False"
