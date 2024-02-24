@@ -52,7 +52,7 @@ jobs:
       - name: Cleanup Docker images
         run: docker image rm $FQ_IMAGE_NAME  
 
-  deploy-to-aks:  
+  deploy-to-aks-with-helm:  
     runs-on: ubuntu-latest
     needs: build-and-push-docker-image
 
@@ -68,14 +68,19 @@ jobs:
       - name: Configure Kubernetes context
         run: az aks get-credentials -g $RG_NAME -n $CLUSTER_NAME
 
-      - name: Configure Kubernetes Manifest
+      - name: Update values.yaml
         env:
           FQ_IMAGE_NAME: ${{ needs.build-and-push-docker-image.outputs.fq_image_name }}
         run: |
           MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, '$AKS_POOL_NODE_NAME')].clientId" -o tsv)
-          sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./aks/deployment.yml
-          sed -i "s|<MANAGED_CLIENT_ID>|$MANAGED_CLIENT_ID|g" ./aks/deployment.yml
-          cat ./aks/deployment.yml
+          sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./helm/people-web-app/templates/values.yaml
+          sed -i "s|<MANAGED_CLIENT_ID>|$MANAGED_CLIENT_ID|g" ./helm/people-web-app/templates/values.yaml
+          cat ./helm/people-web-app/templates/values.yaml
 
-      - name: Update Deployment
-        run: kubectl apply -f ./aks/deployment.yml
+      - name: Helm Lint
+        run: |
+          helm lint ./helm/templates/people-web-app
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install people-web-app-helm ./helm/people-web-app/
