@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "people-web-app.fullname" . }}
+  name: {{ include "people-web-app.name" . }}
   labels:
     {{- include "people-web-app.labels" . | nindent 4 }}
 spec:

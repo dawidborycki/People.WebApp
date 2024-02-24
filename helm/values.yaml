@@ -1,7 +1,5 @@
 replicaCount: 1
 
-fullname: "people-web-app"
-
 image:
   repository: <FQ_IMAGE_NAME>
   pullPolicy: IfNotPresent  
