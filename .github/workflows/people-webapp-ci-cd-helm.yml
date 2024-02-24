@@ -1,9 +1,9 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline (Helm)
 
 on:
   push:
     branches:
-      - ci-cd
+      - ci-cd-helm
       
 env:
   IMAGE_NAME: people.webapp
