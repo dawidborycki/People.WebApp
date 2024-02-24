@@ -16,7 +16,7 @@ service:
   targetPort: 5000
   containerPort: 5000
 
-resources:   
+resources:
   limits:
     cpu: 750m
     memory: 1000Mi
