@@ -2,7 +2,7 @@
 Expand the name of the chart.
 */}}
 {{- define "people-web-app.name" -}}
-{{- default .Chart.Name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s" .Chart.Name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
