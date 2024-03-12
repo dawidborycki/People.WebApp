@@ -14,7 +14,7 @@ env:
   # AKS_POOL_NODE_NAME: aks-people-agentpool
 
 jobs:
-  update-infrastructure:
+  infrastructure:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -47,6 +47,7 @@ jobs:
 
   build-and-push-docker-image:
     runs-on: ubuntu-latest    
+    needs: infrastructure
     outputs:
       fq_image_name: ${{steps.build-image.outputs.FQ_IMAGE_NAME}}
       
