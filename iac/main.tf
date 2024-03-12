@@ -15,7 +15,7 @@ resource "azurerm_kubernetes_cluster" "kubernetes_cluster" {
   name                = "aks-people-tf"
   resource_group_name = azurerm_resource_group.rg-tf.name
   location            = azurerm_resource_group.rg-tf.location
-  dns_prefix          = "${azurerm_kubernetes_cluster.kubernetes_cluster.name}-dns"
+  dns_prefix          = "aks-people-tf-dns"
 
   default_node_pool {
     name                = "agentpool"    
