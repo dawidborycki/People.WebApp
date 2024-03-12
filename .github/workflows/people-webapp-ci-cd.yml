@@ -3,17 +3,48 @@ name: CI/CD Pipeline (Helm)
 on:
   push:
     branches:
-      - ci-cd-helm
+      - ci-cd-iac
       
 env:
   IMAGE_NAME: people.webapp
-  ACR_NAME: people
-  ACR_LOGIN_SERVER: people.azurecr.io
-  RG_NAME: rg-aks-people
-  CLUSTER_NAME: aks-people
-  AKS_POOL_NODE_NAME: aks-people-agentpool
+  # ACR_NAME: peopletf
+  # ACR_LOGIN_SERVER: people.azurecr.io
+  # RG_NAME: rg-aks-people-tf
+  # CLUSTER_NAME: aks-people-tf
+  # AKS_POOL_NODE_NAME: aks-people-agentpool
 
 jobs:
+  update-infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform Init        
+        working-directory: ./iac
+        run: terraform init
+
+      - name: Terraform Plan        
+        working-directory: ./iac
+        run: terraform plan
+
+      - name: Terraform Apply
+        working-directory: ./iac
+        run: |
+          terraform apply -auto-approve
+          echo "ACR_NAME=$(terraform output -raw acr_name)" >> $GITHUB_ENV
+          echo "ACR_LOGIN_SERVER=$(terraform output -raw acr_login_server)" >> $GITHUB_ENV
+          echo "RG_NAME=$(terraform output -raw rg_name)" >> $GITHUB_ENV
+          echo "CLUSTER_NAME=$(terraform output -raw cluster_name)" >> $GITHUB_ENV
+          echo "AKS_POOL_NODE_NAME=$(terraform output -raw aks_pool_node_name)" >> $GITHUB_ENV
+        # env:
+        #   TF_VAR_some_sensitive_variable: ${{ secrets.SOME_SENSITIVE_VARIABLE }}
+
   build-and-push-docker-image:
     runs-on: ubuntu-latest    
     outputs:
