@@ -5,5 +5,5 @@ variable "resource_group_name" {
 
 variable "location" {
   description = "Azure region for all resources"
-  default     = "West US"
+  default     = "East US"
 }
