@@ -84,6 +84,10 @@ resource "azurerm_key_vault_secret" "key_vault_secret" {
   name         = "connection-string"
   value        = local.sql_connection_string
   key_vault_id = azurerm_key_vault.key_vault.id
+
+  depends_on = [    
+    azurerm_kubernetes_cluster.kubernetes_cluster
+  ]
 }
 
 resource "azurerm_key_vault_access_policy" "self" {
@@ -100,4 +104,9 @@ resource "azurerm_key_vault_access_policy" "cluster" {
   object_id    = azurerm_kubernetes_cluster.kubernetes_cluster.kubelet_identity[0].object_id
 
   secret_permissions = ["Get"]
+
+  depends_on = [    
+    azurerm_key_vault.key_vault,
+    azurerm_kubernetes_cluster.kubernetes_cluster    
+  ]
 }
