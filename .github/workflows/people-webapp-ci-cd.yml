@@ -55,12 +55,7 @@ jobs:
         working-directory: ./iac
         run: |
           terraform apply -auto-approve
-          echo "ACR_NAME=$(terraform output -raw acr_name)" >> $GITHUB_ENV
-          echo "ACR_LOGIN_SERVER=$(terraform output -raw acr_login_server)" >> $GITHUB_ENV
-          echo "RG_NAME=$(terraform output -raw rg_name)" >> $GITHUB_ENV
-          echo "CLUSTER_NAME=$(terraform output -raw cluster_name)" >> $GITHUB_ENV
-          echo "AKS_POOL_NODE_NAME=$(terraform output -raw aks_pool_node_name)" >> $GITHUB_ENV        
-
+          
   build-and-push-docker-image:
     runs-on: ubuntu-latest    
     needs: infrastructure
