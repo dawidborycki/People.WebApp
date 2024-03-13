@@ -4,5 +4,6 @@ terraform {
     storage_account_name  = "peoplewebappstore"
     container_name        = "terraform"
     key                   = "prod.terraform.tfstate"
+    use_oidc              = true
   }
 }
