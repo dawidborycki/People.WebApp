@@ -30,7 +30,14 @@ jobs:
 
       - name: Terraform Init        
         working-directory: ./iac
-        run: terraform init
+        run: |
+          STORAGE_ACCOUNT_NAME=$(grep 'storage_account_name' terraform.tfvars | awk '{print $3}' | tr -d '"')
+          RESOURCE_GROUP_NAME=$(grep 'resource_group_name' terraform.tfvars | awk '{print $3}' | tr -d '"')
+        
+          ARM_ACCESS_KEY=$(az storage account keys list --account-name $STORAGE_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME --query '[0].value' -o tsv)
+          echo "ARM_ACCESS_KEY=${ARM_ACCESS_KEY}" >> $GITHUB_ENV
+        
+          terraform init
 
       - name: Terraform Plan        
         working-directory: ./iac
