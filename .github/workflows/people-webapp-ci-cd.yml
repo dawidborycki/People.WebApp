@@ -133,7 +133,10 @@ jobs:
           FQ_IMAGE_NAME: ${{ needs.build-and-push-docker-image.outputs.fq_image_name }}
           KEY_VAULT_NAME: ${{ needs.infrastructure.outputs.key_vault_name }}
         run: |
-          MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, '${{ needs.infrastructure.outputs.aks_pool_node_name }}')].clientId" -o tsv)
+          MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, '${{ needs.infrastructure.outputs.cluster_name }}-${{ needs.infrastructure.outputs.aks_pool_node_name }}')].clientId" -o tsv)
+          echo "FQ_IMAGE_NAME=${FQ_IMAGE_NAME}"
+          echo "KEY_VAULT_NAME=${KEY_VAULT_NAME}"
+          echo "MANAGED_CLIENT_ID=${MANAGED_CLIENT_ID}"
           sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./helm/values.yaml
           sed -i "s|<KEY_VAULT_NAME>|$KEY_VAULT_NAME|g" ./helm/values.yaml
           sed -i "s|<MANAGED_CLIENT_ID>|$MANAGED_CLIENT_ID|g" ./helm/values.yaml          
