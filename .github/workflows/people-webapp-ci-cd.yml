@@ -17,11 +17,12 @@ jobs:
   infrastructure:
     runs-on: ubuntu-latest
     outputs:
-      acr_name: ${{ steps.infrastructure.outputs.ACR_NAME }}
-      acr_login_server: ${{ steps.infrastructure.outputs.ACR_LOGIN_SERVER }}
-      rg_name: ${{ steps.infrastructure.outputs.RG_NAME }}
-      cluster_name: ${{ steps.infrastructure.outputs.CLUSTER_NAME }}
-      aks_pool_node_name: ${{ steps.infrastructure.outputs.AKS_POOL_NODE_NAME }}
+      acr_name: ${{ steps.terraform-apply.outputs.ACR_NAME }}
+      acr_login_server: ${{ steps.terraform-apply.outputs.ACR_LOGIN_SERVER }}
+      rg_name: ${{ steps.terraform-apply.outputs.RG_NAME }}
+      cluster_name: ${{ steps.terraform-apply.outputs.CLUSTER_NAME }}
+      aks_pool_node_name: ${{ steps.terraform-apply.outputs.AKS_POOL_NODE_NAME }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3  
@@ -61,6 +62,7 @@ jobs:
 
       - name: Terraform Apply
         working-directory: ./iac
+        id: terraform-apply
         run: |
           terraform apply -auto-approve
           echo "ACR_NAME=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
