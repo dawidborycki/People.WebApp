@@ -17,3 +17,7 @@ output "cluster_name" {
 output "aks_pool_node_name" {
   value = azurerm_kubernetes_cluster.kubernetes_cluster.default_node_pool[0].name
 }
+
+output "key_vault_name" {
+  value = azurerm_key_vault.key_vault.name
+}
