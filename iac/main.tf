@@ -110,7 +110,7 @@ resource "azurerm_key_vault_access_policy" "cluster" {
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = azurerm_kubernetes_cluster.kubernetes_cluster.kubelet_identity[0].object_id
 
-  secret_permissions = ["Get"]
+  secret_permissions = ["Get", "List"]
 
   depends_on = [    
     azurerm_key_vault.key_vault,
