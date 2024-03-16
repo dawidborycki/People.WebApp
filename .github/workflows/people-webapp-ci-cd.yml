@@ -83,32 +83,32 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }} 
 
       - name: Login to Azure Container Registry
-        run: az acr login -n ${{ needs.infrastructure.outputs.acr_name }}"
+        run: az acr login -n ${{ needs.infrastructure.outputs.acr_name }}
 
       - name: Count existing tags and configure the image tag    
         run: |
-          COUNT=$(az acr repository show-tags -n $ACR_NAME --repository $IMAGE_NAME -o tsv | wc -l)
+          COUNT=$(az acr repository show-tags -n ${{ needs.infrastructure.outputs.acr_name }} --repository $IMAGE_NAME -o tsv | wc -l)
           IMAGE_TAG=v$(expr $COUNT + 1)      
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         id: build-image
         run: |
-          FQ_IMAGE_NAME=$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          FQ_IMAGE_NAME=${{ needs.infrastructure.outputs.acr_login_server }}/$IMAGE_NAME:$IMAGE_TAG
           echo "FQ_IMAGE_NAME=$FQ_IMAGE_NAME" >> $GITHUB_ENV
           echo "FQ_IMAGE_NAME=$FQ_IMAGE_NAME" >> $GITHUB_OUTPUT
           docker build -t $FQ_IMAGE_NAME .
           docker push $FQ_IMAGE_NAME
 
       - name: Logout from Azure Container Registry
-        run: docker logout $ACR_LOGIN_SERVER
+        run: docker logout ${{ needs.infrastructure.outputs.acr_login_server }}
         
       - name: Cleanup Docker images
         run: docker image rm $FQ_IMAGE_NAME  
 
   deploy-to-aks-with-helm:  
     runs-on: ubuntu-latest
-    needs: build-and-push-docker-image
+    needs: [build-and-push-docker-image, infrastructure]
 
     steps:
       - name: Checkout code
@@ -120,13 +120,13 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }} 
 
       - name: Configure Kubernetes context
-        run: az aks get-credentials -g $RG_NAME -n $CLUSTER_NAME
+        run: az aks get-credentials -g ${{ needs.infrastructure.outputs.rg_name }} -n ${{ needs.infrastructure.outputs.cluster_name }}
 
       - name: Update values.yaml
         env:
           FQ_IMAGE_NAME: ${{ needs.build-and-push-docker-image.outputs.fq_image_name }}
         run: |
-          MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, '$AKS_POOL_NODE_NAME')].clientId" -o tsv)
+          MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, '${{ needs.infrastructure.outputs.aks_pool_node_name }}')].clientId" -o tsv)
           sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./helm/values.yaml
           sed -i "s|<MANAGED_CLIENT_ID>|$MANAGED_CLIENT_ID|g" ./helm/values.yaml
           cat ./helm//values.yaml
