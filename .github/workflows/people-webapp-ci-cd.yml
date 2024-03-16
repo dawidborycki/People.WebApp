@@ -61,6 +61,7 @@ jobs:
         working-directory: ./iac
         run: |
           terraform apply -auto-approve
+          echo "ACR_NAME=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
           
   build-and-push-docker-image:
     runs-on: ubuntu-latest    
