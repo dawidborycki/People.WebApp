@@ -135,9 +135,8 @@ jobs:
         run: |
           MANAGED_CLIENT_ID=$(az identity list --query "[?contains(name, '${{ needs.infrastructure.outputs.aks_pool_node_name }}')].clientId" -o tsv)
           sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./helm/values.yaml
-          sed -i "s|<FQ_IMAGE_NAME>|$FQ_IMAGE_NAME|g" ./helm/values.yaml
-          sed -i "s|<MANAGED_CLIENT_ID>|$MANAGED_CLIENT_ID|g" ./helm/values.yaml
-          cat ./helm//values.yaml
+          sed -i "s|<KEY_VAULT_NAME>|$KEY_VAULT_NAME|g" ./helm/values.yaml
+          sed -i "s|<MANAGED_CLIENT_ID>|$MANAGED_CLIENT_ID|g" ./helm/values.yaml          
 
       - name: Helm Lint
         run: helm lint ./helm
