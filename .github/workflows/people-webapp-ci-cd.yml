@@ -40,7 +40,9 @@ jobs:
         shell: bash
         
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3      
+        uses: hashicorp/setup-terraform@v2.0.3   
+        with:
+          terraform_wrapper: false   
 
       - name: Terraform Init        
         working-directory: ./iac
