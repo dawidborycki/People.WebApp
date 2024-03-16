@@ -16,6 +16,12 @@ env:
 jobs:
   infrastructure:
     runs-on: ubuntu-latest
+    outputs:
+      acr_name: ${{ steps.infrastructure.outputs.ACR_NAME }}
+      acr_login_server: ${{ steps.infrastructure.outputs.ACR_LOGIN_SERVER }}
+      rg_name: ${{ steps.infrastructure.outputs.RG_NAME }}
+      cluster_name: ${{ steps.infrastructure.outputs.CLUSTER_NAME }}
+      aks_pool_node_name: ${{ steps.infrastructure.outputs.AKS_POOL_NODE_NAME }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3  
@@ -72,7 +78,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }} 
 
       - name: Login to Azure Container Registry
-        run: az acr login -n $ACR_NAME
+        run: az acr login -n ${{ needs.infrastructure.outputs.acr_name }}"
 
       - name: Count existing tags and configure the image tag    
         run: |
